@@ -1,18 +1,5 @@
-const readline = require("readline");
+const inquirer = require("inquirer");
 const { randomChoice, getRandomInt, sleep } = require("./utils");
-
-function createInterface() {
-  return readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-}
-
-function askQuestion(rl, question) {
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => resolve(answer));
-  });
-}//promise pour poser une question et attendre la réponse de l'utilisateur
 
 function displayFighter(fighter) {
   console.log(`\n${fighter.name.toUpperCase()}`);
@@ -25,21 +12,22 @@ function displayFighter(fighter) {
   });
 }
 
-async function choosePlayerMove(rl, player) {
-  while (true) {
-    const answer = await askQuestion(
-      rl,
-      "\nChoisis une attaque (1 à 5) : "
-    );
+async function choosePlayerMove(player) {
+  const choices = player.moves.map((move, index) => ({
+    name: `${index + 1}. ${move.name} | Power: ${move.power} | Accuracy: ${move.accuracy} | PP: ${move.pp}`,
+    value: move
+  }));
 
-    const choice = parseInt(answer);
-
-    if (choice >= 1 && choice <= 5) {
-      return player.moves[choice - 1];
+  const { selectedMove } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "selectedMove",
+      message: "Choisis une attaque :",
+      choices: choices
     }
+  ]);
 
-    console.log("Choix invalide. Réessaie.");
-  }
+  return selectedMove;
 }
 
 function chooseBotMove(bot) {
@@ -62,7 +50,7 @@ function applyDamage(defender, move) {
   }
 }
 
-async function executeTurn(attacker, defender, attackerMove, defenderMove, isPlayer) {
+async function executeTurn(attacker, defender, attackerMove, defenderMove) {
   console.log(`\n${attacker.name} veut utiliser ${attackerMove.name}`);
 
   if (attackerMove.pp <= 0) {
@@ -92,8 +80,6 @@ async function executeTurn(attacker, defender, attackerMove, defenderMove, isPla
 }
 
 async function startBattle(player, bot) {
-  const rl = createInterface();
-
   console.log("\n==============================");
   console.log("       DEBUT DU COMBAT");
   console.log("==============================");
@@ -103,21 +89,21 @@ async function startBattle(player, bot) {
 
   while (player.hp > 0 && bot.hp > 0) {
     console.log("\n------------------------------");
-    console.log(`Tour suivant`);
+    console.log("Tour suivant");
     console.log(`${player.name}: ${player.hp} HP`);
     console.log(`${bot.name}: ${bot.hp} HP`);
     console.log("------------------------------");
 
     displayFighter(player);
 
-    const playerMove = await choosePlayerMove(rl, player);
+    const playerMove = await choosePlayerMove(player);
     const botMove = chooseBotMove(bot);
 
     console.log(`\nLe bot a choisi ${botMove.name}`);
 
     await sleep(500);
 
-    await executeTurn(player, bot, playerMove, botMove, true);
+    await executeTurn(player, bot, playerMove, botMove);
 
     if (bot.hp <= 0) {
       console.log(`\n${bot.name} est KO !`);
@@ -127,7 +113,7 @@ async function startBattle(player, bot) {
 
     await sleep(500);
 
-    await executeTurn(bot, player, botMove, playerMove, false);
+    await executeTurn(bot, player, botMove, playerMove);
 
     if (player.hp <= 0) {
       console.log(`\n${player.name} est KO !`);
@@ -135,12 +121,8 @@ async function startBattle(player, bot) {
       break;
     }
   }
-
-  rl.close();
 }
 
 module.exports = {
-  createInterface,
-  askQuestion,
   startBattle
 };

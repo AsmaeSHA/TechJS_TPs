@@ -1,24 +1,31 @@
 #!/usr/bin/env node
+
 const { getPokemonByName, getRandomPokemon, buildFighterFromPokemon } = require("./api");
-const { createInterface, askQuestion, startBattle } = require("./game");
+const { startBattle } = require("./game");
+const inquirer = require("inquirer");
 
 async function main() {
-  const rl = createInterface();
-
   console.log("=====================================");
   console.log("   MINI JEU POKEMON - NODE.JS");
   console.log("=====================================");
 
   try {
-    const playerPokemonName = await askQuestion(
-      rl,
-      "Entre le nom de ton Pokémon : "
-    );
+    const { playerPokemonName } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "playerPokemonName",
+        message: "Entre le nom de ton Pokémon :",
+        validate: (input) => {
+          if (input.trim() === "") {
+            return "Le nom ne peut pas être vide.";
+          }
+          return true;
+        }
+      }
+    ]);
 
-    const playerPokemonData = await getPokemonByName(playerPokemonName);
+    const playerPokemonData = await getPokemonByName(playerPokemonName.trim());
     const botPokemonData = await getRandomPokemon();
-
-    rl.close();
 
     const player = await buildFighterFromPokemon(playerPokemonData);
     const bot = await buildFighterFromPokemon(botPokemonData);
@@ -43,7 +50,6 @@ async function main() {
 
     await startBattle(player, bot);
   } catch (error) {
-    rl.close();
     console.log("\nErreur :", error.message);
     console.log("Vérifie le nom du Pokémon et réessaie.");
   }

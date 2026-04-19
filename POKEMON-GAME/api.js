@@ -9,7 +9,6 @@ async function fetchJSON(url) {
 
   return response.json();
 }
-
 async function getPokemonByName(name) {
   const url = `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`;
   const data = await fetchJSON(url);
@@ -43,7 +42,7 @@ async function getFiveValidMoves(pokemonData) {
     throw new Error("Ce Pokémon n'a pas de moves.");
   }
 
-  const shuffled = [...rawMoves].sort(() => Math.random() - 0.5);
+  const shuffled = [...rawMoves].sort(() => Math.random() - 0.5);//mélanger les attaques.
 
   const validMoves = [];
 
@@ -82,7 +81,7 @@ async function buildFighterFromPokemon(pokemonData) {
     name: pokemonData.name,
     hp: 300,
     moves
-  };
+  };//Transformer les données brutes du Pokémon en personnage de comba
 }
 
 module.exports = {

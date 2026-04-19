@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const { getPokemonByName, getRandomPokemon, buildFighterFromPokemon } = require("./api");
 const { createInterface, askQuestion, startBattle } = require("./game");
 

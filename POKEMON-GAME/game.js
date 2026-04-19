@@ -12,7 +12,7 @@ function askQuestion(rl, question) {
   return new Promise((resolve) => {
     rl.question(question, (answer) => resolve(answer));
   });
-}
+}//promise pour poser une question et attendre la réponse de l'utilisateur
 
 function displayFighter(fighter) {
   console.log(`\n${fighter.name.toUpperCase()}`);

@@ -3,9 +3,15 @@
   "version": "1.0.0",
   "description": "Mini jeu Pokemon avec PokeAPI en Node.js",
   "main": "index.js",
+  "bin": {
+    "pokemon-game": "./index.js"
+  },
   "scripts": {
     "start": "node index.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }

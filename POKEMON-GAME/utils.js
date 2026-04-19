@@ -5,7 +5,6 @@ function getRandomInt(min, max) {
 function randomChoice(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
-
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
